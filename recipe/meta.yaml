@@ -11,13 +11,12 @@ source:
   url: https://github.com/openSUSE/libsolv/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - win_export_and_static_build.patch  # [win]
     - conda_variant_priorization.patch
     - add_strict_repo_prio_rule.patch
     - memcpy_to_memmove.patch
 
 build:
-  number: 5
+  number: 1
   run_exports:
     - {{ pin_subpackage(name, max_pin='x.x') }}
 
@@ -26,8 +25,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make  # [not win]
-    - ninja  # [win]
-    - cmake
+    - cmake {{cmake}}
   host:
     - zlib
 
@@ -40,22 +38,15 @@ outputs:
         - test -f ${PREFIX}/lib/libsolvext${SHLIB_EXT}  # [unix]
         - test -f ${PREFIX}/lib/libsolv.so.1  # [linux]
         - test -f ${PREFIX}/include/solv/repo.h  # [unix]
-        - if exist %LIBRARY_INC%\solv\repo.h (exit 0) else (exit 1)  # [win]
-        - if exist %LIBRARY_LIB%\solv.lib (exit 0) else (exit 1)  # [win]
-        - if exist %LIBRARY_LIB%\solvext.lib (exit 0) else (exit 1)  # [win]
-        - if exist %LIBRARY_BIN%\solv.dll (exit 0) else (exit 1)  # [win]
-        - dumpsolv.exe -h  # [win]
         - dumpsolv -h  # [unix]
   - name: libsolv-static
     script: install.sh  # [unix]
-    script: install_static.bat  # [win]
     requirements:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - make  # [not win]
-        - ninja  # [win]
-        - cmake
+        - cmake {{cmake}}
       host:
         - zlib
         - {{ pin_subpackage("libsolv", exact=True) }}
@@ -65,8 +56,6 @@ outputs:
       commands:
         - test -f ${PREFIX}/lib/libsolv.a  # [unix]
         - test -f ${PREFIX}/lib/libsolvext.a  # [unix]
-        - if exist %LIBRARY_LIB%\solv_static.lib (exit 0) else (exit 1)  # [win]
-        - if exist %LIBRARY_LIB%\solvext_static.lib (exit 0) else (exit 1)  # [win]
 
 about:
   home: https://github.com/openSUSE/libsolv
@@ -79,8 +68,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - SylvainCorlay
-    - JohanMabille
-    - wolfv
-    - davidbrochart
-    - adriendelsalle
+    - open-ce/open-ce-dev-team
