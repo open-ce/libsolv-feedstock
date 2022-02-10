@@ -27,7 +27,7 @@ requirements:
     - make  # [not win]
     - cmake {{cmake}}
   host:
-    - zlib
+    - zlib {{zlib}}
 
 outputs:
   - name: libsolv
